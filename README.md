@@ -32,6 +32,39 @@ asyncio.run(main())
 
 See [`examples/quickstart.py`](examples/quickstart.py) for a fuller tour.
 
+## Fitdays+
+
+Fitdays 1.28.5 asks users to move their account to **Fitdays+** (package
+`cn.icomon.fitdayspro`). The move freezes the old account and then deletes it.
+After that, `FitdaysClient.login` fails with `code 11000` and the data is only
+reachable through the Fitdays+ backend. Use `FitdaysPlusClient` for those accounts:
+
+```python
+from fitdays import FitdaysPlusClient
+
+async with await FitdaysPlusClient.login("you@example.com", "hunter2") as client:
+    latest = await client.get_latest()
+```
+
+It has the same methods as `FitdaysClient` and returns the same models, so code
+that reads `Measurement`, `UserProfile` and `ScaleDevice` works for both. Three
+differences:
+
+* The session is a `PlusSession`. It stores two password digests
+  (`access_code` and `access_sign`) and a `client_id`, and serialises with
+  `to_dict()` / `from_dict()` like `Session`.
+* `get_sync()` makes two requests. Fitdays+ returns weigh-ins and devices from
+  one endpoint and the member profiles from another.
+* A profile's `suid` holds the Fitdays+ `uid`. The names differ between the two
+  backends; the field keeps its old name so callers do not have to branch.
+
+Login, sync, profiles and token renewal were tested against `plus-eu.fitdays.cn`
+on 2026-11-12. The test account had no weigh-ins, so the measurement fields come
+from the Fitdays+ 1.14.4 app's data model and have not been checked against a real
+response yet. The body-composition values beyond weight, BMI, body fat and
+impedance are read from the `body_composition` object the app stores in each
+weigh-in's `ext` field. Reports with real data are welcome.
+
 ## What you get
 
 `get_sync()` returns everything in one round-trip:
@@ -102,7 +135,7 @@ which turns each member profile into a device with body-composition sensors.
 
 | Exception | Means |
 |---|---|
-| `FitdaysAuthError` | login failed, or the token is dead and cannot be renewed |
+| `FitdaysAuthError` | login failed, the token is dead and cannot be renewed, or (Fitdays+) the account is frozen mid-migration |
 | `FitdaysNetworkError` | timeout / connection problem |
 | `FitdaysAPIError` | the cloud returned a non-success `code` |
 | `FitdaysValidationError` | you passed something unusable |

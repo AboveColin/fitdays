@@ -17,6 +17,7 @@ on the account.
 """
 
 from .client import FitdaysClient, TokenUpdatedCallback
+from .plus import FitdaysPlusClient, PlusTokenUpdatedCallback
 from .constants import (
     API_BASES,
     APP_VERSION,
@@ -24,6 +25,9 @@ from .constants import (
     DEFAULT_COUNTRY,
     DEFAULT_HISTORY_DAYS,
     DEFAULT_LANGUAGE,
+    PLUS_API_BASES,
+    PLUS_APP_VERSION,
+    PLUS_DEFAULT_API_BASE,
 )
 from .exceptions import (
     FitdaysAPIError,
@@ -34,23 +38,31 @@ from .exceptions import (
 )
 from .models import (
     Measurement,
+    PlusSession,
     ScaleDevice,
     Session,
     SyncResult,
     UserProfile,
 )
+from .plus_signing import plus_access_code, plus_access_sign, plus_headers
 from .signing import hash_password, signed_query
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 __all__ = [
     # Main client
     "FitdaysClient",
     "TokenUpdatedCallback",
+    "FitdaysPlusClient",
+    "PlusTokenUpdatedCallback",
     # Session / auth
     "Session",
     "hash_password",
     "signed_query",
+    "PlusSession",
+    "plus_access_code",
+    "plus_access_sign",
+    "plus_headers",
     # Exceptions
     "FitdaysError",
     "FitdaysAPIError",
@@ -69,4 +81,7 @@ __all__ = [
     "DEFAULT_COUNTRY",
     "DEFAULT_LANGUAGE",
     "DEFAULT_HISTORY_DAYS",
+    "PLUS_API_BASES",
+    "PLUS_APP_VERSION",
+    "PLUS_DEFAULT_API_BASE",
 ]

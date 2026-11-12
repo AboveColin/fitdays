@@ -6,7 +6,7 @@ from setuptools import setup
 
 setup(
     name="fitdays",
-    version="1.0.0",
+    version="1.1.0",
     description=(
         "An unofficial async Python client for the Fitdays (ICOMON) smart-scale "
         "cloud API"
